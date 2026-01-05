@@ -36,34 +36,39 @@ module.exports = {
   filters: {
     // Include jobs with these role keywords
     roles: [
-      'engineer',
-      'architect',
-      'developer',
-      'sales',
-      'solutions',
-      'technical',
+      // AI roles
+      'ai engineer',
       'ai',
-      'ml',
-      'data',
-      'platform',
-      'backend',
-      'frontend',
-      'fullstack',
-      'devops',
-      'sre',
+      'machine learning',
+      'ml engineer',
+      'artificial intelligence',
+      // Sales Engineering
+      'sales engineer',
+      'sales engineering',
+      // Solutions Engineering  
+      'solutions engineer',
+      'solutions engineering',
+      'solution engineer',
+      'solutions architect',
+      'solution architect',
+      // Pre-sales
+      'presales',
+      'pre-sales',
+      'presales engineer',
+      'pre-sales engineer',
+      // Technical Sales
+      'technical sales',
+      'sales consultant',
+      'technical account',
+      // Customer Engineering
+      'customer engineer',
+      'customer success engineer',
+      'field engineer',
     ],
     // Include jobs with these location keywords (empty = all locations)
     locations: [],
-    // Exclude jobs with these keywords
-    exclude: [
-      'intern',
-      'internship',
-      'junior',
-      'associate',
-      'entry level',
-      'co-op',
-      'apprentice',
-    ],
+    // Exclude jobs with these keywords (empty = no exclusions, all XP levels welcome)
+    exclude: [],
   },
 
   // Scraping intervals (in cron format)
@@ -77,7 +82,7 @@ module.exports = {
   // Message formatting
   formatting: {
     // Max jobs to post in a single batch (to avoid rate limits)
-    maxBatchSize: 5,
+    maxBatchSize: 10,
     // Delay between posts in ms
     postDelay: 2000,
   },
