@@ -1,0 +1,30 @@
+{
+  "name": "mega-server-career-bot",
+  "version": "1.0.0",
+  "description": "Discord bot that aggregates job postings from LinkedIn, Lever, Greenhouse, Wellfound, and Y Combinator",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "dev": "node --watch src/bot.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "jobs",
+    "career",
+    "linkedin",
+    "lever",
+    "greenhouse"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "imap": "^0.8.19",
+    "mailparser": "^3.6.6",
+    "node-cron": "^3.0.3"
+  }
+}
+
