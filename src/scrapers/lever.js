@@ -1,22 +1,21 @@
 /**
  * Lever Job Board Scraper
  * 
- * Scrapes job postings from jobs.lever.co for configured companies
+ * Uses Lever's JSON API to fetch job postings
  */
 
-const cheerio = require('cheerio');
 const config = require('../config');
 const logger = require('../utils/logger');
 
-const BASE_URL = 'https://jobs.lever.co';
+const API_URL = 'https://api.lever.co/v0/postings';
 
 /**
- * Fetch and parse jobs from a Lever company page
- * @param {string} company - Company slug (e.g., 'stripe', 'openai')
+ * Fetch jobs from a Lever company via API
+ * @param {string} company - Company slug (e.g., 'spotify', 'openai')
  * @returns {Array} Array of job objects
  */
 async function scrapeCompany(company) {
-  const url = `${BASE_URL}/${company}`;
+  const url = `${API_URL}/${company}?mode=json`;
   const jobs = [];
 
   try {
@@ -26,36 +25,21 @@ async function scrapeCompany(company) {
       return jobs;
     }
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
-
-    // Lever uses a specific structure for job listings
-    $('.posting').each((_, element) => {
-      const $posting = $(element);
-      
-      const title = $posting.find('.posting-title h5').text().trim();
-      const location = $posting.find('.posting-categories .location').text().trim();
-      const team = $posting.find('.posting-categories .department').text().trim();
-      const commitment = $posting.find('.posting-categories .commitment').text().trim();
-      const jobUrl = $posting.find('a.posting-title').attr('href');
-
-      if (title && jobUrl) {
-        // Extract job ID from URL
-        const jobId = jobUrl.split('/').pop();
-
-        jobs.push({
-          id: `lever-${company}-${jobId}`,
-          title,
-          company: formatCompanyName(company),
-          location: location || 'Not specified',
-          team: team || null,
-          commitment: commitment || null,
-          url: jobUrl,
-          source: 'Lever',
-          scrapedAt: new Date().toISOString(),
-        });
-      }
-    });
+    const data = await response.json();
+    
+    for (const job of data) {
+      jobs.push({
+        id: `lever-${company}-${job.id}`,
+        title: job.text || 'Unknown Title',
+        company: formatCompanyName(company),
+        location: job.categories?.location || 'Not specified',
+        team: job.categories?.team || null,
+        commitment: job.categories?.commitment || null,
+        url: job.hostedUrl || job.applyUrl || `https://jobs.lever.co/${company}/${job.id}`,
+        source: 'Lever',
+        scrapedAt: new Date().toISOString(),
+      });
+    }
 
     logger.debug(`Lever: Found ${jobs.length} jobs at ${company}`);
   } catch (error) {
@@ -72,14 +56,11 @@ async function scrapeCompany(company) {
  */
 function formatCompanyName(slug) {
   const nameMap = {
-    'openai': 'OpenAI',
-    'anthropic': 'Anthropic',
-    'figma': 'Figma',
-    'notion': 'Notion',
-    'stripe': 'Stripe',
-    'vercel': 'Vercel',
-    'linear': 'Linear',
-    'retool': 'Retool',
+    'spotify': 'Spotify',
+    'palantir': 'Palantir',
+    'clari': 'Clari',
+    'outreach': 'Outreach',
+    'highspot': 'Highspot',
   };
   return nameMap[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
 }
@@ -146,4 +127,3 @@ module.exports = {
   scrapeCompany,
   filterJobs,
 };
-

@@ -1,7 +1,11 @@
 /**
  * Mega Server Career Bot Configuration
  * 
- * Add companies you want to track and filter settings here.
+ * Curated list of tech companies across all stages:
+ * - Enterprise: Large public tech companies
+ * - Pre-IPO/Unicorn: Late-stage private companies
+ * - Growth: Series B-D companies
+ * - Startup: Early-stage/YC companies
  */
 
 module.exports = {
@@ -10,41 +14,50 @@ module.exports = {
   companies: {
     // Lever: jobs.lever.co/[company]
     lever: [
+      // Enterprise / Late Stage
       'spotify',
-      'openai',
-      'anthropic',
-      'figma',
-      'vercel',
-      'notion',
-      'supabase',
-      'linear',
-      'dbt-labs',
-      'tailscale',
-      'retool',
-      'webflow',
-      'postman',
-      'mux',
-      'prisma',
-      'loom',
+      'palantir',
+      // Sales Tech
+      'clari',
+      'outreach',
+      'highspot',
     ],
     // Greenhouse: boards.greenhouse.io/[company]  
     greenhouse: [
-      'airbnb',
+      // Enterprise / Public
       'datadog',
-      'duolingo',
-      'instacart',
-      'gusto',
-      'airtable',
+      'cloudflare',
+      'twilio',
+      'mongodb',
+      'okta',
+      'pagerduty',
+      'zscaler',
+      'gitlab',
+      // Fintech
       'stripe',
+      'affirm',
       'robinhood',
+      'mercury',
+      'block',
+      // Consumer / Marketplace
+      'airbnb',
+      'instacart',
       'lyft',
-      'coinbase',
-      'chime',
+      'duolingo',
+      'reddit',
+      'toast',
+      // Productivity
+      'airtable',
+      'gusto',
+      'figma',
+      'flexport',
+      // Hardware / Autonomous
+      'waymo',
+      'nuro',
+      'samsara',
       'verkada',
-      'nerdwallet',
-      'clari',
-      'lacework',
-      'grafana',
+      // AI / Data
+      'databricks',
     ],
   },
 
@@ -82,7 +95,24 @@ module.exports = {
       'field engineer',
     ],
     // Include jobs with these location keywords (empty = all locations)
-    locations: [],
+    locations: [
+      // Remote
+      'remote', 'anywhere', 'distributed', 'work from home',
+      // USA general
+      'united states', 'usa', 'us,', 'u.s.',
+      // USA cities
+      'new york', 'nyc', 'san francisco', 'sf', 'bay area', 
+      'los angeles', 'la', 'seattle', 'austin', 'boston', 
+      'chicago', 'denver', 'miami', 'atlanta', 'washington dc',
+      'san diego', 'portland', 'philadelphia', 'dallas', 'houston',
+      'phoenix', 'minneapolis', 'detroit', 'san jose', 'palo alto',
+      'mountain view', 'sunnyvale', 'menlo park', 'redwood city',
+      // Canada general
+      'canada', 'canadian',
+      // Canada cities
+      'toronto', 'vancouver', 'montreal', 'ottawa', 'calgary', 
+      'edmonton', 'waterloo', 'kitchener',
+    ],
     // Exclude jobs with these keywords (empty = no exclusions, all XP levels welcome)
     exclude: [],
   },

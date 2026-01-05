@@ -1,22 +1,21 @@
 /**
  * Greenhouse Job Board Scraper
  * 
- * Scrapes job postings from boards.greenhouse.io for configured companies
+ * Uses Greenhouse's JSON API to fetch job postings
  */
 
-const cheerio = require('cheerio');
 const config = require('../config');
 const logger = require('../utils/logger');
 
-const BASE_URL = 'https://boards.greenhouse.io';
+const API_URL = 'https://boards-api.greenhouse.io/v1/boards';
 
 /**
- * Fetch and parse jobs from a Greenhouse company page
- * @param {string} company - Company slug (e.g., 'airbnb', 'coinbase')
+ * Fetch jobs from a Greenhouse company via API
+ * @param {string} company - Company slug (e.g., 'airbnb', 'stripe')
  * @returns {Array} Array of job objects
  */
 async function scrapeCompany(company) {
-  const url = `${BASE_URL}/${company}`;
+  const url = `${API_URL}/${company}/jobs`;
   const jobs = [];
 
   try {
@@ -26,62 +25,19 @@ async function scrapeCompany(company) {
       return jobs;
     }
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
+    const data = await response.json();
+    const jobList = data.jobs || [];
 
-    // Greenhouse uses sections for departments
-    $('section.level-0').each((_, section) => {
-      const $section = $(section);
-      const department = $section.find('h2').text().trim();
-
-      // Find all job openings in this section
-      $section.find('.opening').each((_, opening) => {
-        const $opening = $(opening);
-        
-        const $link = $opening.find('a');
-        const title = $link.text().trim();
-        const jobUrl = $link.attr('href');
-        const location = $opening.find('.location').text().trim();
-
-        if (title && jobUrl) {
-          // Extract job ID from URL
-          const jobId = jobUrl.split('/').pop().split('?')[0];
-
-          jobs.push({
-            id: `greenhouse-${company}-${jobId}`,
-            title,
-            company: formatCompanyName(company),
-            location: location || 'Not specified',
-            department: department || null,
-            url: jobUrl.startsWith('http') ? jobUrl : `${BASE_URL}${jobUrl}`,
-            source: 'Greenhouse',
-            scrapedAt: new Date().toISOString(),
-          });
-        }
-      });
-    });
-
-    // Alternative structure - some boards use different markup
-    if (jobs.length === 0) {
-      $('div[class*="opening"]').each((_, element) => {
-        const $el = $(element);
-        const $link = $el.find('a').first();
-        const title = $link.text().trim();
-        const jobUrl = $link.attr('href');
-        const location = $el.find('[class*="location"]').text().trim();
-
-        if (title && jobUrl) {
-          const jobId = jobUrl.split('/').pop().split('?')[0];
-          jobs.push({
-            id: `greenhouse-${company}-${jobId}`,
-            title,
-            company: formatCompanyName(company),
-            location: location || 'Not specified',
-            url: jobUrl.startsWith('http') ? jobUrl : `${BASE_URL}${jobUrl}`,
-            source: 'Greenhouse',
-            scrapedAt: new Date().toISOString(),
-          });
-        }
+    for (const job of jobList) {
+      jobs.push({
+        id: `greenhouse-${company}-${job.id}`,
+        title: job.title || 'Unknown Title',
+        company: formatCompanyName(company),
+        location: job.location?.name || 'Not specified',
+        department: job.departments?.[0]?.name || null,
+        url: job.absolute_url || `https://boards.greenhouse.io/${company}/jobs/${job.id}`,
+        source: 'Greenhouse',
+        scrapedAt: new Date().toISOString(),
       });
     }
 
@@ -100,14 +56,40 @@ async function scrapeCompany(company) {
  */
 function formatCompanyName(slug) {
   const nameMap = {
-    'airbnb': 'Airbnb',
-    'coinbase': 'Coinbase',
+    // Enterprise / Public
     'datadog': 'Datadog',
-    'twitch': 'Twitch',
-    'plaid': 'Plaid',
-    'airtable': 'Airtable',
-    'duolingo': 'Duolingo',
+    'cloudflare': 'Cloudflare',
+    'twilio': 'Twilio',
+    'mongodb': 'MongoDB',
+    'okta': 'Okta',
+    'pagerduty': 'PagerDuty',
+    'zscaler': 'Zscaler',
+    'gitlab': 'GitLab',
+    // Fintech
+    'stripe': 'Stripe',
+    'affirm': 'Affirm',
+    'robinhood': 'Robinhood',
+    'mercury': 'Mercury',
+    'block': 'Block',
+    // Consumer / Marketplace
+    'airbnb': 'Airbnb',
     'instacart': 'Instacart',
+    'lyft': 'Lyft',
+    'duolingo': 'Duolingo',
+    'reddit': 'Reddit',
+    'toast': 'Toast',
+    // Productivity
+    'airtable': 'Airtable',
+    'gusto': 'Gusto',
+    'figma': 'Figma',
+    'flexport': 'Flexport',
+    // Hardware / Autonomous
+    'waymo': 'Waymo',
+    'nuro': 'Nuro',
+    'samsara': 'Samsara',
+    'verkada': 'Verkada',
+    // AI / Data
+    'databricks': 'Databricks',
   };
   return nameMap[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
 }
@@ -174,4 +156,3 @@ module.exports = {
   scrapeCompany,
   filterJobs,
 };
-
