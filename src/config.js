@@ -75,8 +75,8 @@ module.exports = {
   schedule: {
     // Check for new jobs every hour
     jobCheck: '0 * * * *',
-    // LinkedIn email check every 30 minutes
-    emailCheck: '*/30 * * * *',
+    // LinkedIn emails handled by n8n workflow - disabled here
+    emailCheck: null,
   },
 
   // Message formatting
